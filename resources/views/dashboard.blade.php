@@ -2,7 +2,7 @@
 
 @section('title', 'Beranda Utama - SIBUK BOS')
 @section('page_title', 'Beranda Utama')
-@section('page_hint', 'Sistem Generate Kuitansi BOS')
+@section('page_hint', 'Sistem Generate Kuitansi BOS BOOOOOS')
 
 @section('content')
     @php
