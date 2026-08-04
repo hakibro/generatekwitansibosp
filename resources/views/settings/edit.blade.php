@@ -159,11 +159,40 @@
 
         <div class="panel">
             <div class="panel-head">
+                <h2>Ubah Password</h2>
+            </div>
+            <div class="panel-body form-grid">
+                <div class="field">
+                    <label>Password Saat Ini</label>
+                    <input type="password" name="current_password" form="password-form">
+                </div>
+                <div class="field">
+                    <label>Password Baru</label>
+                    <input type="password" name="new_password" form="password-form">
+                </div>
+                <div class="field">
+                    <label>Konfirmasi Password Baru</label>
+                    <input type="password" name="new_password_confirmation" form="password-form">
+                </div>
+            </div>
+            <div class="panel-body actions">
+                <button class="btn primary" type="submit" form="password-form"><i class="fa-solid fa-key"></i>Ubah
+                    Password</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-head">
                 <h2>Simpan Settings</h2>
             </div>
             <div class="panel-body actions">
                 <button class="btn good" type="submit"><i class="fa-solid fa-floppy-disk"></i>Simpan Settings</button>
             </div>
         </div>
+    </form>
+
+    <form id="password-form" method="post" action="{{ route('settings.password') }}" style="display:none;">
+        @csrf
+        @method('put')
     </form>
 @endsection

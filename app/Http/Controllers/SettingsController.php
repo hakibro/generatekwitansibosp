@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Support\ReceiptSettings;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class SettingsController extends Controller
 {
@@ -95,5 +98,19 @@ class SettingsController extends Controller
             })
             ->filter(fn($name) => $name !== '')
             ->all();
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        Auth::user()->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->route('settings.edit')->with('status', 'Password berhasil diubah.');
     }
 }

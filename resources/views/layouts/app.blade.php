@@ -580,7 +580,15 @@
                 <a @class(['active' => request()->routeIs('settings.*')]) href="{{ route('settings.edit') }}"><i
                         class="fa-solid fa-gear fa-fw"></i>Setelan Akun</a>
             </nav>
-            <div class="note"><i class="fa-solid fa-right-from-bracket"></i> Akhiri Sesi</div>
+            <div class="note">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit"
+                        style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;display:flex;align-items:center;gap:8px;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Akhiri Sesi
+                    </button>
+                </form>
+            </div>
         </aside>
         <main class="main">
             <div class="top">
