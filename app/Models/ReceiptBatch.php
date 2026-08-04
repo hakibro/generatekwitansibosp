@@ -18,12 +18,14 @@ class ReceiptBatch extends Model
         'number_mode',
         'merge_mode',
         'stamp_limit',
+        'show_attachment',
     ];
 
     protected $casts = [
         'month' => 'integer',
         'year' => 'integer',
         'stamp_limit' => 'integer',
+        'show_attachment' => 'boolean',
     ];
 
     public function items(): HasMany

@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $batches = ReceiptBatch::query()
             ->with('items')
             ->where('year', $year)
-            ->when($month, fn ($query) => $query->where('month', $month))
+            ->when($month, fn($query) => $query->where('month', $month))
             ->latest()
             ->get();
 
@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 'items' => $batch->items->count(),
                 'receipts' => $receipts->count(),
                 'total' => $receipts->sum('amount'),
-                'unfilled_receivers' => $receipts->filter(fn ($receipt) => $receipt['receiver_name'] === '-')->count(),
+                'unfilled_receivers' => $receipts->filter(fn($receipt) => $receipt['receiver_name'] === '-')->count(),
             ];
         };
 
@@ -48,7 +48,7 @@ class DashboardController extends Controller
             : 0;
         $latestProof = optional($yearBatches->flatMap->items->sortByDesc('id')->first())->proof_number;
         $monthStats = collect(ReceiptSettings::MONTHS)->map(function ($label, $value) use ($yearSummaries) {
-            $items = $yearSummaries->filter(fn ($summary) => $summary['batch']->month === $value);
+            $items = $yearSummaries->filter(fn($summary) => $summary['batch']->month === $value);
 
             return [
                 'month' => $value,
@@ -65,6 +65,7 @@ class DashboardController extends Controller
             'year' => $year,
             'month' => $month,
             'summaries' => $summaries,
+            'settings' => $settings,
             'totalReceipts' => $summaries->sum('receipts'),
             'totalItems' => $summaries->sum('items'),
             'totalAmount' => $summaries->sum('total'),

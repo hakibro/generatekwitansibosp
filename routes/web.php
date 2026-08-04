@@ -14,6 +14,7 @@ Route::post('/imports', [ImportController::class, 'store'])->name('imports.store
 Route::get('/batches/{batch}/edit', [ReceiptBatchController::class, 'edit'])->name('batches.edit');
 Route::put('/batches/{batch}', [ReceiptBatchController::class, 'update'])->name('batches.update');
 Route::get('/batches/{batch}/print', [ReceiptBatchController::class, 'print'])->name('batches.print');
+Route::get('/batches/{batch}/print-v2', [ReceiptBatchController::class, 'printV2'])->name('batches.print-v2');
 Route::delete('/batches/{batch}', [ReceiptBatchController::class, 'destroy'])->name('batches.destroy');
 
 Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');

@@ -12,8 +12,8 @@ class ReceiptGenerator
     public function build(ReceiptBatch $batch, array $settings): Collection
     {
         $groups = $batch->items
-            ->filter(fn (ReceiptItem $item) => filled($item->description) && $item->amount > 0)
-            ->groupBy(fn (ReceiptItem $item, int $index) => $this->groupKey($batch, $item, $index));
+            ->filter(fn(ReceiptItem $item) => filled($item->description) && $item->amount > 0)
+            ->groupBy(fn(ReceiptItem $item, int $index) => $this->groupKey($batch, $item, $index));
 
         return $groups->values()->map(function (Collection $items, int $index) use ($batch, $settings) {
             $first = $items->first();
@@ -23,14 +23,14 @@ class ReceiptGenerator
 
             $amount = (int) $items->sum('amount');
             $descriptions = $items->pluck('description')->filter()->unique()->values();
-            $accountKey = trim($first->account_code.' '.$first->detail_code);
+            $accountKey = trim($first->account_code . ' ' . $first->detail_code);
             $program = CodeReferences::findProgramForActivity($first->activity_code);
             $activity = CodeReferences::findActivity($first->activity_code);
             $account = CodeReferences::findAccount($first->account_code, $first->detail_code);
             $activityName = $activity['name'] ?? '';
             $accountName = $account['name'] ?? '';
             $description = $descriptions->implode(' | ');
-            $receiver = $items->pluck('receiver_name')->first(fn ($name) => filled($name)) ?: '-';
+            $receiver = $items->pluck('receiver_name')->first(fn($name) => filled($name)) ?: '-';
 
             return [
                 'key' => $this->groupKey($batch, $first, $index),
@@ -50,9 +50,10 @@ class ReceiptGenerator
                 'description' => $description,
                 'items_count' => $items->count(),
                 'amount' => $amount,
-                'terbilang' => $this->terbilang($amount).' Rupiah',
+                'terbilang' => $this->terbilang($amount) . ' Rupiah',
                 'receiver_name' => $receiver,
                 'use_stamp' => $amount >= $batch->stamp_limit,
+                'show_attachment' => $items->contains(fn($i) => $i->show_attachment),
                 'checklist' => $this->checklist($settings, $first, $description, $activityName, $accountName),
             ];
         });
@@ -61,7 +62,7 @@ class ReceiptGenerator
     private function groupKey(ReceiptBatch $batch, ReceiptItem $item, int $index): string
     {
         return match ($batch->merge_mode) {
-            'none' => 'row-'.$item->id.'-'.$index,
+            'none' => 'row-' . $item->id . '-' . $index,
             'by-proof-only' => (string) $item->proof_number,
             default => implode('|', [
                 $item->proof_number,
@@ -74,16 +75,16 @@ class ReceiptGenerator
 
     private function nextProof(string $start, int $offset): string
     {
-        if (! preg_match('/^([A-Za-z]*)(\d+)$/', $start, $match)) {
-            return $start.($offset + 1);
+        if (!preg_match('/^([A-Za-z]*)(\d+)$/', $start, $match)) {
+            return $start . ($offset + 1);
         }
 
-        return Str::upper($match[1]).str_pad((string) ((int) $match[2] + $offset), strlen($match[2]), '0', STR_PAD_LEFT);
+        return Str::upper($match[1]) . str_pad((string) ((int) $match[2] + $offset), strlen($match[2]), '0', STR_PAD_LEFT);
     }
 
     private function checklist(array $settings, ReceiptItem $item, string $description, string $activityName, string $accountName): array
     {
-        $text = Str::lower($item->detail_code.' '.$description.' '.$activityName.' '.$accountName);
+        $text = Str::lower($item->detail_code . ' ' . $description . ' ' . $activityName . ' ' . $accountName);
         $template = $settings['template']['general_checklist'];
 
         if (preg_match('/honor|tenaga|pendidik|13|29|30|31/', $text)) {
@@ -92,16 +93,16 @@ class ReceiptGenerator
             $template = $settings['template']['siplah_checklist'];
         }
 
-        return collect(preg_split('/\r?\n/', $template))->map(fn ($line) => trim($line))->filter()->values()->all();
+        return collect(preg_split('/\r?\n/', $template))->map(fn($line) => trim($line))->filter()->values()->all();
     }
 
     private function formatDate($date): string
     {
-        if (! $date) {
+        if (!$date) {
             return '';
         }
 
-        return $date->day.' '.(ReceiptSettings::MONTHS[$date->month] ?? $date->format('F')).' '.$date->year;
+        return $date->day . ' ' . (ReceiptSettings::MONTHS[$date->month] ?? $date->format('F')) . ' ' . $date->year;
     }
 
     private function terbilang(int $number): string
@@ -113,28 +114,28 @@ class ReceiptGenerator
             return $units[$number] ?: 'Nol';
         }
         if ($number < 20) {
-            return $this->terbilang($number - 10).' Belas';
+            return $this->terbilang($number - 10) . ' Belas';
         }
         if ($number < 100) {
-            return $this->cleanNumberText($this->terbilang(intdiv($number, 10)).' Puluh '.$this->terbilang($number % 10));
+            return $this->cleanNumberText($this->terbilang(intdiv($number, 10)) . ' Puluh ' . $this->terbilang($number % 10));
         }
         if ($number < 200) {
-            return $this->cleanNumberText('Seratus '.$this->terbilang($number - 100));
+            return $this->cleanNumberText('Seratus ' . $this->terbilang($number - 100));
         }
         if ($number < 1000) {
-            return $this->cleanNumberText($this->terbilang(intdiv($number, 100)).' Ratus '.$this->terbilang($number % 100));
+            return $this->cleanNumberText($this->terbilang(intdiv($number, 100)) . ' Ratus ' . $this->terbilang($number % 100));
         }
         if ($number < 2000) {
-            return $this->cleanNumberText('Seribu '.$this->terbilang($number - 1000));
+            return $this->cleanNumberText('Seribu ' . $this->terbilang($number - 1000));
         }
         if ($number < 1000000) {
-            return $this->cleanNumberText($this->terbilang(intdiv($number, 1000)).' Ribu '.$this->terbilang($number % 1000));
+            return $this->cleanNumberText($this->terbilang(intdiv($number, 1000)) . ' Ribu ' . $this->terbilang($number % 1000));
         }
         if ($number < 1000000000) {
-            return $this->cleanNumberText($this->terbilang(intdiv($number, 1000000)).' Juta '.$this->terbilang($number % 1000000));
+            return $this->cleanNumberText($this->terbilang(intdiv($number, 1000000)) . ' Juta ' . $this->terbilang($number % 1000000));
         }
 
-        return $this->cleanNumberText($this->terbilang(intdiv($number, 1000000000)).' Miliar '.$this->terbilang($number % 1000000000));
+        return $this->cleanNumberText($this->terbilang(intdiv($number, 1000000000)) . ' Miliar ' . $this->terbilang($number % 1000000000));
     }
 
     private function cleanNumberText(string $text): string

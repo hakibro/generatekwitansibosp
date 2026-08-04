@@ -20,11 +20,13 @@ class ReceiptItem extends Model
         'amount',
         'receiver_name',
         'warning',
+        'show_attachment',
     ];
 
     protected $casts = [
         'transaction_date' => 'date',
         'amount' => 'integer',
+        'show_attachment' => 'boolean',
     ];
 
     public function batch(): BelongsTo

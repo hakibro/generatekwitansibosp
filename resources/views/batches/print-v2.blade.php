@@ -4,8 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cetak Kuitansi {{ $batch->month }}-{{ $batch->year }}</title>
+    <title>Cetak Kuitansi v2 {{ $batch->month }}-{{ $batch->year }}</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             background: #cfd7df;
@@ -48,67 +52,80 @@
         .receipt-page {
             width: 210mm;
             min-height: 297mm;
-            padding: 12mm 13mm;
+            padding: 8mm 9mm;
             background: #fff;
-            font-size: 10pt;
-            line-height: 1.28;
+            font-size: 9pt;
+            line-height: 1.35;
             page-break-after: always;
             box-shadow: 0 8px 24px rgba(16, 24, 40, .18);
         }
 
         .receipt-frame {
             border: 2px solid #111;
-            padding: 10mm 10mm 8mm;
+            padding: 6mm 8mm;
+        }
+
+        .meta-top {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+
+        .meta-table {
+            border-collapse: collapse;
+            width: 105mm;
+            font-size: 8.5pt;
+        }
+
+        .meta-table td {
+            border: 1px solid #111;
+            padding: 2px 5px;
+            vertical-align: middle;
+        }
+
+        .meta-table td:first-child {
+            width: 42mm;
+            font-weight: 700;
+        }
+
+        .meta-table td:nth-child(2) {
+            width: 4mm;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .meta-table td:last-child {
+            text-align: center;
+            font-weight: 700;
         }
 
         .receipt-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
-            margin-bottom: 9px;
-            border-bottom: 2px solid #111;
-            padding-bottom: 7px;
+            text-align: center;
+            margin-bottom: 12px;
         }
 
         .receipt-title h1 {
             margin: 0;
-            font-size: 18pt;
+            font-size: 20pt;
             font-weight: 900;
-            letter-spacing: 1px;
-        }
-
-        .receipt-title b {
-            border: 1px solid #111;
-            padding: 6px 10px;
-            min-width: 46mm;
-            text-align: center;
-        }
-
-        .subtitle {
-            font-weight: 700;
-            margin-bottom: 10px;
-            padding: 7px 9px;
-            border: 1px solid #111;
-            background: #f6f6f6;
+            letter-spacing: 8px;
         }
 
         .kv {
             width: 100%;
-            margin-bottom: 9px;
+            margin-bottom: 8px;
             border-collapse: collapse;
         }
 
         .kv td {
             border: 0;
-            padding: 2.8px 4px;
-            font-size: 9.7pt;
+            padding: 4px 4px;
+            font-size: 9pt;
             vertical-align: top;
         }
 
         .kv td:first-child {
-            width: 38mm;
-            font-weight: 700;
+            width: 52mm;
         }
 
         .kv td:nth-child(2) {
@@ -116,69 +133,74 @@
             text-align: center;
         }
 
-        .money {
-            font-weight: 800;
+        .kv td:last-child {
+            width: auto;
         }
 
-        .spell {
-            font-style: italic;
+        .boxed-value {
+            border: 1px solid #111;
+            padding: 5px 8px;
+            font-weight: 600;
+            display: inline-block;
+            width: 100%;
         }
 
-        .amount-lines {
-            width: 96mm;
-            margin: 12px 0 15px auto;
+        .program-block {
+            margin: 10px 0 14px 0;
         }
 
-        .amount-line {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 12px;
-            border-bottom: 1px dashed #111;
-            padding: 5px 0 4px;
+        .program-block .kv td:first-child {
+            width: 52mm;
         }
 
-        .amount-line:first-child {
-            display: block;
-            font-weight: 700;
+        .program-block .kv .indent-content {
+            padding-left: 57mm;
         }
 
-        .amount-line.total {
-            font-weight: 800;
+        .amount-row {
+            margin: 14px 0 18px 0;
+        }
+
+        .amount-row .boxed-value {
+            font-weight: 400;
         }
 
         .signatures {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 12px;
-            text-align: center;
-            margin-top: 16px;
+            margin-top: 18px;
+            font-size: 10pt;
         }
 
         .signatures>div {
-            border-top: 1px solid #111;
-            padding-top: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 64mm;
         }
 
-        .sig-space {
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            position: relative;
+        .sig-label {
+            margin-bottom: auto;
+            line-height: 1.45;
         }
 
         .sig-name {
-            font-weight: 700;
-            text-decoration: underline;
+            font-weight: 900;
+            margin-bottom: 3px;
         }
 
-        .materai {
-            border: 1px solid #777;
-            padding: 9px;
-            width: 72px;
-            margin: 0 auto;
-            font-size: 9pt;
+        .sig-nip {
+            font-weight: 700;
+        }
+
+        .sig-space {
+            min-height: 72px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-bottom: 6px;
+            position: relative;
         }
 
         .sig-img {
@@ -215,7 +237,7 @@
             transform: rotate(-12deg);
         }
 
-        .spj-separator {
+        .attachment-separator {
             margin: 14px 0;
             border-top: 1px dashed #555;
         }
@@ -296,10 +318,11 @@
 
 <body>
     <div class="toolbar">
-        <div>{{ $receipts->count() }} kuitansi - Total Rp. {{ number_format($receipts->sum('amount'), 0, ',', '.') }}
+        <div>{{ $receipts->count() }} kuitansi v2 - Total Rp. {{ number_format($receipts->sum('amount'), 0, ',', '.') }}
         </div>
         <div>
             <a href="{{ route('batches.edit', $batch) }}">Kembali Edit</a>
+            <a href="{{ route('batches.print', $batch) }}">Versi Lama</a>
             <button onclick="window.print()">Cetak / Simpan PDF</button>
         </div>
     </div>
@@ -308,54 +331,41 @@
         @foreach ($receipts as $receipt)
             <section class="receipt-page">
                 <div class="receipt-frame">
+                    <div class="meta-top">
+                        <table class="meta-table">
+                            <tr>
+                                <td>NO.BKU/HAL</td>
+                                <td>:</td>
+                                <td>{{ $receipt['proof'] }}</td>
+                            </tr>
+                            <tr>
+                                <td>NO.PROGRAM/ KEG</td>
+                                <td>:</td>
+                                <td>{{ $receipt['activity_code'] }}</td>
+                            </tr>
+                            <tr>
+                                <td>KODE REKENING</td>
+                                <td>:</td>
+                                <td>{{ $receipt['account_reference_code'] ?: $receipt['account_key'] }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
                     <div class="receipt-title">
                         <h1>KUITANSI</h1>
-                        <b>No. Bukti : {{ $receipt['proof'] }}</b>
                     </div>
-                    <div class="subtitle">
-                        {{ $settings['template']['fund_name'] }}
-                        <span style="float:right">Tahun Anggaran : {{ $batch->year }}</span>
-                    </div>
+
                     <table class="kv">
                         <tr>
-                            <td>Kode Program</td>
+                            <td>Terima dari</td>
                             <td>:</td>
-                            <td>{{ $receipt['program_code'] }} @if ($receipt['program_name'])
-                                    - {{ $receipt['program_name'] }}
-                                @endif
+                            <td>Bendahara BOSP {{ $settings['school']['school_name'] }}</td>
+                        </tr>
+                        <tr>
+                            <td>Banyaknya Uang</td>
+                            <td>:</td>
+                            <td><span class="boxed-value">{{ number_format($receipt['amount'], 0, ',', '.') }}</span>
                             </td>
-                        </tr>
-                        <tr>
-                            <td>Kode Kegiatan</td>
-                            <td>:</td>
-                            <td>{{ $receipt['activity_code'] }} @if ($receipt['activity_name'])
-                                    - {{ $receipt['activity_name'] }}
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Kode Rekening</td>
-                            <td>:</td>
-                            <td>{{ $receipt['account_key'] }} @if ($receipt['account_name'])
-                                    - {{ $receipt['account_name'] }}
-                                @endif
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Sudah Terima Dari</td>
-                            <td>:</td>
-                            <td>Kepala {{ $settings['school']['school_name'] }} Kecamatan
-                                {{ $settings['school']['district'] }}</td>
-                        </tr>
-                        <tr>
-                            <td>Jumlah Uang</td>
-                            <td>:</td>
-                            <td class="money">Rp. {{ number_format($receipt['amount'], 0, ',', '.') }} ,-</td>
-                        </tr>
-                        <tr>
-                            <td>Terbilang</td>
-                            <td>:</td>
-                            <td class="spell">{{ $receipt['terbilang'] }}</td>
                         </tr>
                         <tr>
                             <td>Untuk Pembayaran</td>
@@ -363,16 +373,43 @@
                             <td>{{ $receipt['description'] }}</td>
                         </tr>
                     </table>
-                    <div class="amount-lines">
-                        <div class="amount-line"><span>Perincian Penerimaan</span></div>
-                        <div class="amount-line"><span>Penerimaan</span><b>Rp.
-                                {{ number_format($receipt['amount'], 0, ',', '.') }} ,-</b></div>
-                        <div class="amount-line total"><span>Jumlah Diterimakan</span><b>Rp.
-                                {{ number_format($receipt['amount'], 0, ',', '.') }} ,-</b></div>
+
+                    <div class="program-block">
+                        <table class="kv">
+                            <tr>
+                                <td colspan="3" class="indent-content">tanggal {{ $receipt['date_text'] }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="indent-content">Program / Kegiatan :
+                                    {{ $receipt['activity_code'] }} @if ($receipt['activity_name'])
+                                        - {{ $receipt['activity_name'] }}
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="indent-content">Kode Rekening :
+                                    {{ $receipt['account_reference_code'] ?: $receipt['account_key'] }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="indent-content">Nomor Rekening Penerima :</td>
+                            </tr>
+                        </table>
                     </div>
+
+                    <div class="amount-row">
+                        <table class="kv">
+                            <tr>
+                                <td>Jumlah</td>
+                                <td>:</td>
+                                <td><span class="boxed-value">Rp. &nbsp;&nbsp; {{ $receipt['terbilang'] }}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+
                     <div class="signatures">
                         <div>
-                            <div>Mengetahui,<br>Kepala Sekolah</div>
+                            <div class="sig-label">Setuju dibayar<br>Kepala Sekolah
+                                {{ $settings['school']['school_name'] }}</div>
                             <div class="sig-space">
                                 @if (($settings['sign']['mode'] ?? 'ttd_stempel') === 'none')
                                     {{-- tanpa tanda tangan --}}
@@ -391,10 +428,11 @@
                                 @endif
                             </div>
                             <div class="sig-name">{{ $settings['sign']['principal_name'] }}</div>
-                            <div>NIP. {{ $settings['sign']['principal_nip'] }}</div>
+                            <div class="sig-nip">NIP. {{ $settings['sign']['principal_nip'] }}</div>
                         </div>
                         <div>
-                            <div>Lunas Dibayar Oleh,<br>Bendahara BOS</div>
+                            <div class="sig-label">Lunas dibayar<br>Tanggal : {{ $receipt['date_text'] }}<br>Bendahara
+                                Pengeluaran</div>
                             <div class="sig-space">
                                 @if (($settings['sign']['mode'] ?? 'ttd_stempel') === 'none')
                                     {{-- tanpa tanda tangan --}}
@@ -407,21 +445,19 @@
                                 @endif
                             </div>
                             <div class="sig-name">{{ $settings['sign']['treasurer_name'] }}</div>
-                            <div>NIP. {{ $settings['sign']['treasurer_nip'] }}</div>
+                            <div class="sig-nip">NIP. {{ $settings['sign']['treasurer_nip'] }}</div>
                         </div>
                         <div>
-                            <div>{{ $settings['sign']['place'] }}, {{ $receipt['date_text'] }}<br>Penerima</div>
-                            <div class="sig-space">
-                                @if ($receipt['use_stamp'])
-                                    <div class="materai">Materai<br>Rp 10.000</div>
-                                @endif
-                            </div>
+                            <div class="sig-label">{{ $settings['sign']['place'] }},
+                                {{ $receipt['date_text'] }}<br>Yang menerima</div>
                             <div class="sig-name">{{ $receipt['receiver_name'] }}</div>
+                            <div class="sig-nip">NIP. -</div>
                         </div>
                     </div>
                 </div>
+
                 @if ($receipt['show_attachment'])
-                    <div class="spj-separator"></div>
+                    <div class="attachment-separator"></div>
                     <div class="attachment">
                         <h2>LEMBAR KELENGKAPAN LAMPIRAN SPJ</h2>
                         <table class="kv">

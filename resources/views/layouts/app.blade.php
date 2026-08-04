@@ -331,6 +331,25 @@
             box-shadow: 0 0 0 3px rgba(20, 108, 148, .14);
         }
 
+        input[type=file] {
+            padding: 8px 10px;
+            font-size: 11px;
+        }
+
+        .img-preview {
+            margin-bottom: 6px;
+            padding: 6px;
+            background: #111827;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            display: inline-block;
+        }
+
+        .img-preview img {
+            display: block;
+            border-radius: 6px;
+        }
+
         .stat {
             border: 1px solid #334155;
             border-radius: 20px;

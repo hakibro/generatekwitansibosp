@@ -217,8 +217,9 @@
                             <div class="actions">
                                 <a class="btn" href="{{ route('batches.edit', $summary['batch']) }}"><i
                                         class="fa-solid fa-pen"></i>Edit</a>
-                                <a class="btn primary" href="{{ route('batches.print', $summary['batch']) }}"
-                                    target="_blank"><i class="fa-solid fa-print"></i>Cetak</a>
+                                @php $printRoute = ($settings['export']['layout'] ?? 'v1') === 'v2' ? route('batches.print-v2', $summary['batch']) : route('batches.print', $summary['batch']); @endphp
+                                <a class="btn primary" href="{{ $printRoute }}" target="_blank"><i
+                                        class="fa-solid fa-print"></i>Cetak</a>
                                 <form method="post" action="{{ route('batches.destroy', $summary['batch']) }}"
                                     onsubmit="return confirm('Hapus batch {{ $months[$summary['batch']->month] }} {{ $summary['batch']->year }}?')">
                                     @csrf

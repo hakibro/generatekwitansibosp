@@ -54,6 +54,12 @@ class ReceiptSettings
                 'treasurer_name' => 'Nama Bendahara',
                 'treasurer_nip' => '10000000 200000 1 000',
                 'place' => 'Kecamatan Kandangan',
+                'mode' => 'ttd_stempel',
+                'principal_sign' => null,
+                'treasurer_sign' => null,
+                'school_stamp' => null,
+                'principal_qr' => null,
+                'treasurer_qr' => null,
             ],
             'template' => [
                 'fund_name' => 'BANTUAN OPERASIONAL SATUAN PENDIDIKAN ( BOSP )',
@@ -61,6 +67,9 @@ class ReceiptSettings
                 'honor_checklist' => "Bukti Daftar Penerimaan\nBukti Transfer Pembayaran\nSK Pengangkatan\nDaftar Hadir Bulan Berjalan",
                 'siplah_checklist' => "Bukti Transaksi SIPLAH\nBukti Transfer Pembayaran\nDokumen Pendukung Lain",
                 'note' => 'Pastikan dokumen lengkap dan sah.',
+            ],
+            'export' => [
+                'layout' => 'v1',
             ],
             'program_codes' => [
                 '06' => 'Dukungan operasional dan layanan sekolah',
